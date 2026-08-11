@@ -47,22 +47,22 @@ def seed():
 
         # ── 2. Users ─────────────────────────────────────────────────────
         admin = User(
-            email="admin@cloudguard.io",
-            hashed_password=pwd_context.hash("admin123"),
+            email="admin@abc.com",
+            hashed_password=pwd_context.hash("password123"),
             full_name="Sarah Connor",
             role="ADMIN",
             org_id=org.id
         )
         analyst = User(
-            email="analyst@cloudguard.io",
-            hashed_password=pwd_context.hash("analyst123"),
+            email="analyst@abc.com",
+            hashed_password=pwd_context.hash("password123"),
             full_name="Alex Rivera",
             role="SECURITY_ANALYST",
             org_id=org.id
         )
         viewer = User(
-            email="viewer@cloudguard.io",
-            hashed_password=pwd_context.hash("viewer123"),
+            email="viewer@abc.com",
+            hashed_password=pwd_context.hash("password123"),
             full_name="Jordan Lee",
             role="VIEWER",
             org_id=org.id
@@ -482,14 +482,14 @@ def seed():
             },
             {
                 "event_type": "LOGIN_SUCCESS",
-                "user_email": "admin@cloudguard.io",
+                "user_email": "admin@abc.com",
                 "location": "Mumbai, India",
                 "ip_address": "106.51.24.100",
                 "timestamp": now - datetime.timedelta(minutes=30)
             },
             {
                 "event_type": "NEW_LOCATION_LOGIN",
-                "user_email": "admin@cloudguard.io",
+                "user_email": "admin@abc.com",
                 "location": "Frankfurt, Germany",
                 "ip_address": "185.220.101.50",
                 "timestamp": now - datetime.timedelta(minutes=25)
@@ -530,8 +530,8 @@ def seed():
                 "event_id": ev_objs[7].id,
                 "alert_type": "IMPOSSIBLE_TRAVEL",
                 "severity": "HIGH",
-                "title": "Impossible Travel Detected for admin@cloudguard.io",
-                "description": "User admin@cloudguard.io logged in from Mumbai, India and Frankfurt, Germany within 5 minutes. Physical travel is impossible.",
+                "title": "Impossible Travel Detected for admin@abc.com",
+                "description": "User admin@abc.com logged in from Mumbai, India and Frankfurt, Germany within 5 minutes. Physical travel is impossible.",
                 "status": "NEW",
                 "recommended_action": "Verify user identity immediately. Invalidate all active sessions. Reset credentials."
             },
@@ -647,9 +647,9 @@ def seed():
         logger.info("✅ CloudGuard database seeded successfully!")
         logger.info("=" * 60)
         logger.info("Demo Credentials:")
-        logger.info("  Admin:    admin@cloudguard.io    / admin123")
-        logger.info("  Analyst:  analyst@cloudguard.io  / analyst123")
-        logger.info("  Viewer:   viewer@cloudguard.io   / viewer123")
+        logger.info("  Admin:    admin@abc.com    / password123")
+        logger.info("  Analyst:  analyst@abc.com  / password123")
+        logger.info("  Viewer:   viewer@abc.com   / password123")
         logger.info("=" * 60)
 
     except Exception as e:

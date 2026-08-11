@@ -29,8 +29,7 @@ class UserOut(BaseModel):
     org_id: Optional[int] = None
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 # --- Application Schemas ---
 class ApplicationBase(BaseModel):
@@ -53,8 +52,7 @@ class ApplicationOut(ApplicationBase):
     created_at: datetime
     dependency_ids: Optional[List[int]] = []
 
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 # --- Resource Schemas ---
 class ResourceBase(BaseModel):
@@ -79,8 +77,7 @@ class ResourceOut(ResourceBase):
     org_id: int
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 # --- Migration Schemas ---
 class TaskBase(BaseModel):
@@ -98,8 +95,7 @@ class TaskOut(TaskBase):
     project_id: int
     completed_at: Optional[datetime] = None
 
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 class ProjectBase(BaseModel):
     name: str
@@ -116,8 +112,7 @@ class ProjectOut(ProjectBase):
     created_at: datetime
     tasks: List[TaskOut] = []
 
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 # --- Security & Alert Schemas ---
 class SecurityFindingOut(BaseModel):
@@ -133,8 +128,7 @@ class SecurityFindingOut(BaseModel):
     remediation_steps: Optional[str] = None
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 class EventCreate(BaseModel):
     event_type: str
@@ -149,8 +143,7 @@ class EventOut(EventCreate):
     id: int
     timestamp: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 class AlertOut(BaseModel):
     id: int
@@ -163,8 +156,7 @@ class AlertOut(BaseModel):
     recommended_action: Optional[str] = None
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 # --- Incident Schemas ---
 class IncidentNoteCreate(BaseModel):
@@ -178,8 +170,7 @@ class IncidentNoteOut(BaseModel):
     note: str
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 class IncidentCreate(BaseModel):
     alert_id: Optional[int] = None
@@ -200,8 +191,7 @@ class IncidentOut(BaseModel):
     updated_at: datetime
     notes: List[IncidentNoteOut] = []
 
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 # --- Dashboard & AI Schemas ---
 class DashboardSummary(BaseModel):

@@ -1,5 +1,6 @@
 import sys
 import logging
+from pathlib import Path
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 from app.config import settings
@@ -20,7 +21,8 @@ def get_engine():
             return engine
     except Exception as e:
         logger.warning(f"PostgreSQL connection failed ({e}). Falling back to SQLite for resilient local runtime.")
-        sqlite_url = "sqlite:///./cloudguard.db"
+        project_root = Path(__file__).resolve().parent.parent.parent.parent
+        sqlite_url = f"sqlite:///{project_root.as_posix()}/cloudguard.db"
         return create_engine(sqlite_url, connect_args={"check_same_thread": False})
     
     if db_url.startswith("sqlite"):

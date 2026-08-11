@@ -13,9 +13,9 @@ CloudGuard is a **cloud migration simulation and security operations platform**.
 ## Architecture Diagram
 
 ```
-                    React Frontend (Vite + Tailwind CSS + Recharts)
+                    React Frontend (Vite + Tailwind CSS)
                                           │
-                                       Axios HTTP (JWT Bearer)
+                                       Fetch API (JWT Bearer)
                                           │
                                    FastAPI Backend (Uvicorn)
                                           │
@@ -42,11 +42,11 @@ CloudGuard is a **cloud migration simulation and security operations platform**.
 
 | Tier | Technology | Version | Role |
 |---|---|---|---|
-| Frontend Framework | React | 18.x | UI Component Model |
-| Frontend Build | Vite | 5.x | Dev Server & Module Bundler |
+| Frontend Framework | React | 19.x | UI Component Model |
+| Frontend Build | Vite | 8.x | Dev Server & Module Bundler |
 | Frontend Styling | Tailwind CSS | 3.x | Utility-First CSS Framework |
-| Frontend Charts | Recharts | 2.x | Data Visualisation |
-| Frontend HTTP Client | Axios | 1.x | REST API Communication |
+| Frontend Linting | oxlint | 1.x | Static Analysis |
+| Frontend HTTP Client | Fetch API | Built-in | REST API Communication |
 | Backend Framework | FastAPI | 0.109+ | REST API + OpenAPI Docs |
 | ASGI Server | Uvicorn | 0.27+ | Async HTTP Server |
 | ORM | SQLAlchemy | 2.0.x | Database Model Layer |
@@ -65,7 +65,7 @@ CloudGuard is a **cloud migration simulation and security operations platform**.
 Browser → POST /api/auth/login → FastAPI → SQLAlchemy → DB
        ← JWT Access Token ←
        → JWT stored in localStorage
-       → Axios Interceptor attaches Bearer Token to all requests
+       → Fetch wrapper attaches Bearer Token to all requests
 ```
 
 ### Security Scan Flow
