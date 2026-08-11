@@ -14,6 +14,13 @@ logger = logging.getLogger("cloudguard.main")
 # Auto-create tables if they don't exist yet
 Base.metadata.create_all(bind=engine)
 
+# Seed demo data on first boot (idempotent; no-op if already seeded)
+try:
+    from seed import seed
+    seed()
+except Exception as e:
+    logger.warning(f"Auto-seed skipped: {e}")
+
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
