@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CloudGuard - Sign In</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&amp;family=Inter:wght@400;500&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "on-primary": "#003829",
+                "on-tertiary-container": "#4d1715",
+                "on-tertiary": "#561e1b",
+                "on-error": "#690005",
+                "primary": "#8bd5b9",
+                "tertiary-container": "#cb7b74",
+                "secondary-fixed-dim": "#c8c6c5",
+                "surface-dim": "#16130c",
+                "primary-container": "#559e84",
+                "surface-bright": "#3d3931",
+                "surface": "#16130c",
+                "error": "#ffb4ab",
+                "on-primary-fixed-variant": "#00513d",
+                "secondary-container": "#474746",
+                "on-tertiary-fixed": "#3a0908",
+                "on-primary-container": "#003023",
+                "on-tertiary-fixed-variant": "#72342f",
+                "background": "#000000",
+                "primary-fixed-dim": "#8bd5b9",
+                "on-primary-fixed": "#002117",
+                "surface-tint": "#8bd5b9",
+                "on-secondary-container": "#b7b5b4",
+                "primary-fixed": "#a6f2d4",
+                "inverse-surface": "#e9e2d6",
+                "outline": "#89938d",
+                "on-secondary-fixed-variant": "#474746",
+                "inverse-primary": "#1b6a53",
+                "secondary-fixed": "#e5e2e1",
+                "surface-container": "#221f18",
+                "on-secondary": "#313030",
+                "secondary": "#c8c6c5",
+                "on-error-container": "#ffdad6",
+                "surface-container-low": "#1e1b14",
+                "on-surface-variant": "#bec9c3",
+                "tertiary-fixed-dim": "#ffb3ad",
+                "tertiary": "#ffb3ad",
+                "surface-container-highest": "#38342c",
+                "error-container": "#93000a",
+                "tertiary-fixed": "#ffdad6",
+                "surface-container-lowest": "#100e08",
+                "on-secondary-fixed": "#1c1b1b",
+                "outline-variant": "#3f4944",
+                "on-background": "#fff7eb",
+                "on-surface": "#fff7eb",
+                "inverse-on-surface": "#343028",
+                "surface-container-high": "#2d2a22",
+                "surface-variant": "#38342c"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+        },
+        "spacing": {
+                "margin-mobile": "16px",
+                "margin-desktop": "64px",
+                "container-max": "1440px",
+                "gutter": "24px",
+                "unit": "4px",
+                "stack-sm": "8px",
+                "stack-md": "16px",
+                "stack-lg": "24px",
+                "margin-page": "32px",
+        },
+        "fontFamily": {
+                "headline-lg-mobile": [
+                        "Geist"
+                ],
+                "body-md": [
+                        "Geist"
+                ],
+                "headline-xl": [
+                        "Geist"
+                ],
+                "headline-lg": [
+                        "Geist"
+                ],
+                "code-sm": [
+                        "Geist"
+                ],
+                "label-md": [
+                        "Geist"
+                ],
+                "body-lg": [
+                        "Geist"
+                ],
+                "label-mono": ["JetBrains Mono"],
+                "headline-sm": ["Geist"],
+        },
+        "fontSize": {
+                "headline-lg-mobile": [
+                        "24px",
+                        {
+                                "lineHeight": "1.2",
+                                "fontWeight": "600"
+                        }
+                ],
+                "body-md": [
+                        "16px",
+                        {
+                                "lineHeight": "1.5",
+                                "fontWeight": "400"
+                        }
+                ],
+                "headline-xl": [
+                        "48px",
+                        {
+                                "lineHeight": "1.1",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "headline-lg": [
+                        "32px",
+                        {
+                                "lineHeight": "1.2",
+                                "letterSpacing": "-0.01em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "code-sm": [
+                        "13px",
+                        {
+                                "lineHeight": "1.4",
+                                "fontWeight": "400"
+                        }
+                ],
+                "label-md": [
+                        "14px",
+                        {
+                                "lineHeight": "1.2",
+                                "letterSpacing": "0.02em",
+                                "fontWeight": "500"
+                        }
+                ],
+                "body-lg": [
+                        "18px",
+                        {
+                                "lineHeight": "1.6",
+                                "fontWeight": "400"
+                        }
+                ],
+                "label-mono": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                "headline-sm": ["18px", { "lineHeight": "28px", "fontWeight": "500" }],
+        }
+},
+    },
+  }
+</script>
+<style>
+        .mesh-gradient {
+            background-color: #000000;
+            background-image: 
+                radial-gradient(at 40% 20%, hsla(160,100%,74%,0.1) 0px, transparent 50%),
+                radial-gradient(at 80% 0%, hsla(160,100%,56%,0.05) 0px, transparent 50%),
+                radial-gradient(at 0% 50%, hsla(160,100%,93%,0.05) 0px, transparent 50%);
+        }
+        .glass-panel {
+            background: rgba(22, 19, 12, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid #38342c;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface h-screen w-full overflow-hidden flex font-body-md mesh-gradient">
+<!-- Left Side: Graphic / Branding -->
+<div class="hidden lg:flex lg:w-1/2 h-full flex-col justify-between p-margin-page relative overflow-hidden">
+<!-- Background Image for Graphic Side -->
+<div class="absolute inset-0 z-0">
+<div class="bg-cover bg-center w-full h-full opacity-30 mix-blend-screen grayscale-[50%]" data-alt="A highly technical, abstract representation of secure cloud migration in a dark-mode, deep tech style. Glowing, electric blue data streams flowing between minimalist geometric server racks in a vast, dark obsidian void. Subtle grid lines and micro-typographic overlays suggest a high-stakes, precision engineering environment. Lighting is high-contrast, focusing on the vivid blue energy against the deep charcoal and navy background." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCv4rgn7YiBZOgHl8ZRnv21dBKVAFnAWKFaxnTAIku6Vr1JlS_gPOg6RDRdI8_vGbkAAHOQqQiH2ZsUjtfDhl9EgPvthmg4yjsc2P9k_1J1yuLyIZTtFgwFH26ihXa5fzrznffEVO5XOXGDkFkGLZSGvpMpf57aeR_V3sGqmDTKnvc9fNc10V7-IKoDZpoVVZ1it8WLxHX5-EQKd9NjnjsuVR3mZONmMAT4SHv-eGRjemlmSikucXQmww')"></div>
+</div>
+<div class="absolute inset-0 bg-gradient-to-r from-transparent to-background z-10 pointer-events-none"></div>
+<!-- Branding Header -->
+<div class="z-20">
+<div class="flex items-center gap-stack-sm">
+<span class="material-symbols-outlined text-primary text-[32px]" style="font-variation-settings: 'FILL' 1;">security</span>
+<h1 class="font-headline-lg text-headline-lg font-bold text-on-surface">CloudGuard</h1>
+</div>
+<p class="mt-stack-sm font-label-mono text-label-mono text-on-surface-variant uppercase tracking-widest">Enterprise SecOps Platform</p>
+</div>
+<!-- Callout/Testimonial -->
+<div class="z-20 max-w-md">
+<div class="glass-panel p-stack-lg rounded-xl shadow-lg border-l-4 border-l-primary">
+<p class="font-headline-sm text-headline-sm text-on-surface mb-stack-md">"Total environmental control during complex cloud migrations. Precision engineering at its core."</p>
+<div class="flex items-center gap-stack-sm">
+<div class="w-10 h-10 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]" style="font-variation-settings: 'FILL' 1;">account_circle</span>
+</div>
+<div>
+<p class="font-body-md text-body-md font-medium text-on-surface">System Initialization</p>
+<p class="font-label-mono text-label-mono text-primary">v2.4.1_secure</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Side: Login Form -->
+<div class="w-full lg:w-1/2 h-full flex items-center justify-center p-stack-lg relative z-20">
+<div class="w-full max-w-[440px] glass-panel rounded-xl p-[40px] shadow-2xl relative">
+<!-- Mobile Logo (Hidden on Desktop) -->
+<div class="flex lg:hidden items-center justify-center gap-stack-sm mb-stack-lg">
+<span class="material-symbols-outlined text-primary text-[28px]" style="font-variation-settings: 'FILL' 1;">security</span>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-on-surface">CloudGuard</h1>
+</div>
+<!-- Header -->
+<div class="mb-stack-lg">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-unit">Sign In</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Authenticate to access the control center.</p>
+</div>
+<!-- Form -->
+<form action="../executive_overview_dashboard/code.html" class="space-y-stack-md" method="GET">
+<div>
+<label class="block font-label-mono text-label-mono text-on-surface-variant mb-unit uppercase" for="email">Email Address</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-stack-sm flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline-variant text-[18px]">mail</span>
+</div>
+<input class="block w-full pl-[36px] pr-stack-sm py-[10px] bg-surface-container-lowest border border-outline-variant rounded focus:ring-1 focus:ring-primary focus:border-primary text-on-surface font-body-md text-body-md placeholder-outline-variant transition-colors" id="email" name="email" placeholder="admin@enterprise.com" required="" type="email"/>
+</div>
+</div>
+<div>
+<div class="flex items-center justify-between mb-unit">
+<label class="block font-label-mono text-label-mono text-on-surface-variant uppercase" for="password">Password</label>
+<a class="font-label-mono text-label-mono text-primary hover:text-primary-fixed-dim transition-colors" href="#">Forgot password?</a>
+</div>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-stack-sm flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline-variant text-[18px]">lock</span>
+</div>
+<input class="block w-full pl-[36px] pr-[36px] py-[10px] bg-surface-container-lowest border border-outline-variant rounded focus:ring-1 focus:ring-primary focus:border-primary text-on-surface font-body-md text-body-md placeholder-outline-variant transition-colors" id="password" name="password" placeholder="••••••••" required="" type="password"/>
+<button class="absolute inset-y-0 right-0 pr-stack-sm flex items-center text-outline-variant hover:text-on-surface-variant transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+</div>
+</div>
+<div class="flex items-center pt-unit">
+<input class="h-4 w-4 rounded border-outline-variant bg-surface-container-lowest text-primary focus:ring-primary focus:ring-offset-surface" id="remember-me" name="remember-me" type="checkbox"/>
+<label class="ml-2 block font-body-md text-body-md text-on-surface-variant" for="remember-me">
+                        Remember terminal session
+                    </label>
+</div>
+<div class="pt-stack-sm">
+<button class="w-full flex justify-center py-[10px] px-4 border border-transparent rounded bg-primary text-on-primary font-body-lg text-body-lg font-medium hover:bg-primary-fixed transition-colors shadow-[0_0_15px_rgba(77,142,255,0.15)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:ring-offset-background" type="submit">
+                        Sign In
+                    </button>
+</div>
+</form>
+<!-- Footer -->
+<div class="mt-stack-lg pt-stack-md border-t border-outline-variant text-center">
+<p class="font-body-md text-body-md text-on-surface-variant">
+                    Require access? 
+                    <a class="font-medium text-primary hover:text-primary-fixed-dim transition-colors" href="../cloudguard_registration/code.html">Request provisioning</a>
+</p>
+</div>
+</div>
+</div>
+</body></html>
