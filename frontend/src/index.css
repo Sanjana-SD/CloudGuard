@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #000000;
+    color: #FFF7EB;
+    font-family: 'Geist', 'Inter', sans-serif;
+  }
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #000000;
+}
+::-webkit-scrollbar-thumb {
+  background: #262626;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #408A71;
+}
+
+/* Obsidian Kinetic Custom Styles */
+.mesh-gradient {
+  background-color: #000000;
+  background-image: 
+    radial-gradient(at 40% 20%, hsla(160,100%,74%,0.1) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, hsla(160,100%,56%,0.05) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, hsla(160,100%,93%,0.05) 0px, transparent 50%);
+}
+
+.glass-panel {
+  background: rgba(22, 19, 12, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid #38342c;
+}
+
+/* Simple CSS for mock charts */
+.chart-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 200px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 20px;
+}
+
+.chart-bar {
+  background: linear-gradient(to top, rgba(64,138,113,0.2), rgba(64,138,113,0.8));
+  width: 100%;
+  border-radius: 2px 2px 0 0;
+  position: relative;
+}
+
+.chart-bar::after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #408a71;
+}
+
+.donut-container {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: conic-gradient(#408a71 0% 68%, #38342c 68% 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.donut-inner {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
