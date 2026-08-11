@@ -4,26 +4,6 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
-<<<<<<< HEAD
-  theme: {
-    extend: {
-      colors: {
-        brand: {
-          50: '#f0f4ff',
-          100: '#e0e9fe',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          900: '#1e3a8a',
-        },
-        dark: {
-          bg: '#0b0f19',
-          card: '#111827',
-          border: '#1f2937',
-          hover: '#1f2937',
-          muted: '#9ca3af'
-        }
-=======
   darkMode: 'class',
   theme: {
     extend: {
@@ -77,7 +57,6 @@ export default {
         "lg": "0.5rem",
         "xl": "0.75rem",
         "full": "9999px"
->>>>>>> bbe0ae2bf08a8529700597e0b812a0bd834923ac
       }
     },
   },

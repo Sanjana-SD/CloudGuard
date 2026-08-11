@@ -1,7 +1,30 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/layout/sidebar';
+import { api, type DashboardSummary, type SecurityFindingOut } from '../../services/api';
 
 export const OverviewPage: React.FC = () => {
+  const [summary, setSummary] = useState<DashboardSummary | null>(null);
+  const [findings, setFindings] = useState<SecurityFindingOut[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [sumRes, findingsRes] = await Promise.all([
+          api.dashboard.getSummary(),
+          api.security.getFindings()
+        ]);
+        setSummary(sumRes);
+        setFindings(findingsRes.slice(0, 5));
+      } catch (err) {
+        console.error('Failed to load dashboard data', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, []);
+
   return (
     <div className="bg-background text-on-background min-h-screen flex antialiased">
       {/* Sidebar Navigation */}
@@ -54,9 +77,11 @@ export const OverviewPage: React.FC = () => {
                 <span className="material-symbols-outlined text-on-surface-variant text-[20px]">apps</span>
               </div>
               <div className="flex items-end justify-between">
-                <span className="font-headline-lg text-3xl font-bold text-on-surface">42</span>
+                <span className="font-headline-lg text-3xl font-bold text-on-surface">
+                  {loading ? '...' : summary?.total_applications ?? 0}
+                </span>
                 <span className="font-body-sm text-primary flex items-center text-xs gap-0.5">
-                  <span className="material-symbols-outlined text-[14px]">arrow_upward</span> 3 new
+                  <span className="material-symbols-outlined text-[14px]">arrow_upward</span> active
                 </span>
               </div>
             </div>
@@ -68,9 +93,11 @@ export const OverviewPage: React.FC = () => {
                 <span className="material-symbols-outlined text-on-surface-variant text-[20px]">cloud_sync</span>
               </div>
               <div className="flex items-end justify-between">
-                <span className="font-headline-lg text-3xl font-bold text-on-surface">68%</span>
+                <span className="font-headline-lg text-3xl font-bold text-on-surface">
+                  {loading ? '...' : `${summary?.migration_progress ?? 0}%`}
+                </span>
                 <div className="w-16 h-2 bg-surface-container-highest rounded-full overflow-hidden">
-                  <div className="h-full bg-primary" style={{ width: '68%' }}></div>
+                  <div className="h-full bg-primary" style={{ width: `${summary?.migration_progress ?? 0}%` }}></div>
                 </div>
               </div>
             </div>
@@ -82,7 +109,9 @@ export const OverviewPage: React.FC = () => {
                 <span className="material-symbols-outlined text-[#cb7b74] text-[20px]">warning</span>
               </div>
               <div className="flex items-end justify-between">
-                <span className="font-headline-lg text-3xl font-bold text-on-surface">4</span>
+                <span className="font-headline-lg text-3xl font-bold text-on-surface">
+                  {loading ? '...' : summary?.open_incidents ?? 0}
+                </span>
                 <span className="font-body-sm text-[#cb7b74] flex items-center text-xs">Requires attention</span>
               </div>
             </div>
@@ -94,9 +123,11 @@ export const OverviewPage: React.FC = () => {
                 <span className="material-symbols-outlined text-primary text-[20px]">health_and_safety</span>
               </div>
               <div className="flex items-end justify-between">
-                <span className="font-headline-lg text-3xl font-bold text-on-surface">24</span>
-                <span className="px-2 py-0.5 rounded bg-surface-container-highest text-primary font-label-mono text-[10px] uppercase border border-primary/30">
-                  Low Risk
+                <span className="font-headline-lg text-3xl font-bold text-on-surface">
+                  {loading ? '...' : summary?.security_score ?? 0}
+                </span>
+                <span className={`px-2 py-0.5 rounded bg-surface-container-highest text-primary font-label-mono text-[10px] uppercase border border-primary/30`}>
+                  {loading ? '...' : (summary?.security_score && summary.security_score > 80 ? 'Low Risk' : 'Medium Risk')}
                 </span>
               </div>
             </div>
@@ -177,9 +208,14 @@ export const OverviewPage: React.FC = () => {
             {/* Chart Area: Migration Status */}
             <div className="glass-panel rounded-lg p-stack-md flex flex-col items-center justify-center">
               <h3 className="font-headline-sm text-lg font-semibold text-on-surface w-full text-left mb-4">Migration Status</h3>
-              <div className="donut-container my-4">
+              <div 
+                className="donut-container my-4"
+                style={{ background: `conic-gradient(#408a71 0% ${summary?.migration_progress ?? 0}%, #38342c ${summary?.migration_progress ?? 0}% 100%)` }}
+              >
                 <div className="donut-inner shadow-inner">
-                  <span className="font-headline-lg text-3xl font-bold text-primary">68%</span>
+                  <span className="font-headline-lg text-3xl font-bold text-primary">
+                    {loading ? '...' : `${summary?.migration_progress ?? 0}%`}
+                  </span>
                   <span className="font-label-mono text-label-mono text-on-surface-variant text-[10px] uppercase tracking-wider">Complete</span>
                 </div>
               </div>
@@ -189,14 +225,18 @@ export const OverviewPage: React.FC = () => {
                     <div className="w-3 h-3 rounded bg-primary"></div>
                     <span className="text-on-surface">Migrated</span>
                   </div>
-                  <span className="font-label-mono text-on-surface-variant text-xs">28 Apps</span>
+                  <span className="font-label-mono text-on-surface-variant text-xs">
+                    {loading ? '...' : `${Math.round((summary?.total_applications ?? 0) * (summary?.migration_progress ?? 0) / 100)} Apps`}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded bg-neutral-800"></div>
                     <span className="text-on-surface">Pending</span>
                   </div>
-                  <span className="font-label-mono text-on-surface-variant text-xs">14 Apps</span>
+                  <span className="font-label-mono text-on-surface-variant text-xs">
+                    {loading ? '...' : `${(summary?.total_applications ?? 0) - Math.round((summary?.total_applications ?? 0) * (summary?.migration_progress ?? 0) / 100)} Apps`}
+                  </span>
                 </div>
               </div>
             </div>
@@ -227,64 +267,46 @@ export const OverviewPage: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#38342c]/50 text-sm">
-                  
-                  <tr className="hover:bg-neutral-900/50 transition-colors group">
-                    <td className="py-3 px-stack-md font-label-mono text-on-surface flex items-center gap-2">
-                      <span className="material-symbols-outlined text-[16px] text-on-surface-variant">dns</span>
-                      i-0a1b2c3d4e5f6g7h8
-                    </td>
-                    <td className="py-3 px-stack-md text-on-surface">Publicly accessible S3 bucket containing PII</td>
-                    <td className="py-3 px-stack-md">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-[#cb7b74]/10 text-[#cb7b74] border border-[#cb7b74]/20 font-label-mono uppercase">
-                        Critical
-                      </span>
-                    </td>
-                    <td className="py-3 px-stack-md text-on-surface-variant">2h ago</td>
-                    <td className="py-3 px-stack-md text-right">
-                      <button className="text-primary hover:text-primary-fixed opacity-0 group-hover:opacity-100 transition-opacity">
-                        <span className="material-symbols-outlined text-[20px]">open_in_new</span>
-                      </button>
-                    </td>
-                  </tr>
-
-                  <tr className="hover:bg-neutral-900/50 transition-colors group">
-                    <td className="py-3 px-stack-md font-label-mono text-on-surface flex items-center gap-2">
-                      <span className="material-symbols-outlined text-[16px] text-on-surface-variant">vpn_key</span>
-                      key-9x8y7z6w5v
-                    </td>
-                    <td className="py-3 px-stack-md text-on-surface">IAM User access key inactive for &gt; 90 days</td>
-                    <td className="py-3 px-stack-md">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-orange-500/10 text-orange-400 border border-orange-500/20 font-label-mono uppercase">
-                        High
-                      </span>
-                    </td>
-                    <td className="py-3 px-stack-md text-on-surface-variant">1d ago</td>
-                    <td className="py-3 px-stack-md text-right">
-                      <button className="text-primary hover:text-primary-fixed opacity-0 group-hover:opacity-100 transition-opacity">
-                        <span className="material-symbols-outlined text-[20px]">open_in_new</span>
-                      </button>
-                    </td>
-                  </tr>
-
-                  <tr className="hover:bg-neutral-900/50 transition-colors group">
-                    <td className="py-3 px-stack-md font-label-mono text-on-surface flex items-center gap-2">
-                      <span className="material-symbols-outlined text-[16px] text-on-surface-variant">router</span>
-                      sg-1234abcd5678efgh
-                    </td>
-                    <td className="py-3 px-stack-md text-on-surface">Security Group allows unrestricted SSH (port 22)</td>
-                    <td className="py-3 px-stack-md">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-orange-500/10 text-orange-400 border border-orange-500/20 font-label-mono uppercase">
-                        High
-                      </span>
-                    </td>
-                    <td className="py-3 px-stack-md text-on-surface-variant">3d ago</td>
-                    <td className="py-3 px-stack-md text-right">
-                      <button className="text-primary hover:text-primary-fixed opacity-0 group-hover:opacity-100 transition-opacity">
-                        <span className="material-symbols-outlined text-[20px]">open_in_new</span>
-                      </button>
-                    </td>
-                  </tr>
-
+                  {loading ? (
+                    <tr>
+                      <td colSpan={5} className="py-8 text-center text-on-surface-variant font-label-mono text-xs">
+                        Loading recent findings...
+                      </td>
+                    </tr>
+                  ) : findings.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="py-8 text-center text-on-surface-variant font-label-mono text-xs">
+                        No active findings.
+                      </td>
+                    </tr>
+                  ) : (
+                    findings.map((finding) => (
+                      <tr key={finding.id} className="hover:bg-neutral-900/50 transition-colors group">
+                        <td className="py-3 px-stack-md font-label-mono text-on-surface flex items-center gap-2">
+                          <span className="material-symbols-outlined text-[16px] text-on-surface-variant">dns</span>
+                          SEC-{finding.id}
+                        </td>
+                        <td className="py-3 px-stack-md text-on-surface">{finding.title}</td>
+                        <td className="py-3 px-stack-md">
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold font-label-mono uppercase ${
+                            finding.severity === 'CRITICAL' ? 'bg-[#cb7b74]/10 text-[#cb7b74] border border-[#cb7b74]/20' :
+                            finding.severity === 'HIGH' ? 'bg-orange-500/10 text-orange-400 border border-orange-500/20' :
+                            'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20'
+                          }`}>
+                            {finding.severity}
+                          </span>
+                        </td>
+                        <td className="py-3 px-stack-md text-on-surface-variant">
+                          {new Date(finding.created_at).toLocaleDateString()}
+                        </td>
+                        <td className="py-3 px-stack-md text-right">
+                          <button className="text-primary hover:text-primary-fixed opacity-0 group-hover:opacity-100 transition-opacity">
+                            <span className="material-symbols-outlined text-[20px]">open_in_new</span>
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>

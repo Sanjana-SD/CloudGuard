@@ -97,3 +97,27 @@ def summarize_alerts(db: Session = Depends(get_db), current_user: User = Depends
 - Enforce Multi-Factor Authentication (MFA) across all SecOps analyst accounts.
 """
     return {"summary": summary}
+
+from pydantic import BaseModel
+
+class ChatRequest(BaseModel):
+    message: str
+
+@router.post("/chat")
+def ai_chat(req: ChatRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    msg = req.message.lower()
+    if "remediate" in msg or "fix" in msg or "remediation" in msg:
+        return {
+            "response": "Here is the recommended remediation plan:\n\n```terraform\n# Restrict public accessibility\nresource \"aws_security_group_rule\" \"isolated_ssh\" {\n  type              = \"ingress\"\n  from_port         = 22\n  to_port           = 22\n  protocol          = \"tcp\"\n  cidr_blocks       = [\"10.0.0.0/16\"]\n  security_group_id = \"sg-1234abcd5678efgh\"\n}\n```\n\nEnsure that you revoke any existing rules allowing `0.0.0.0/0` access."
+        }
+    elif "summarize" in msg or "alert" in msg or "finding" in msg or "scan" in msg:
+        alerts = db.query(Alert).all()
+        findings = db.query(SecurityFinding).all()
+        return {
+            "response": f"I analyzed the security posture. There are currently {len(alerts)} alerts and {len(findings)} vulnerability findings. The most critical issue is unencrypted storage on production nodes."
+        }
+    else:
+        return {
+            "response": "Hello! I am your CloudGuard AI Security Copilot. I can help you with:\n1. **Remediation**: Ask me to 'remediate' or 'fix' an issue.\n2. **Security Summaries**: Ask me to 'summarize alerts' or review findings.\n\nWhat can I assist you with today?"
+        }
+

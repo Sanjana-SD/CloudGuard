@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { api } from '../../services/api';
 
 export const RegistrationPage: React.FC = () => {
   const navigate = useNavigate();
@@ -8,10 +9,25 @@ export const RegistrationPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    navigate('/dashboard');
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+    setError('');
+    setLoading(true);
+    try {
+      await api.auth.register(email, password, `${firstName} ${lastName}`, 'SECURITY_ANALYST');
+      navigate('/login');
+    } catch (err: any) {
+      setError(err.message || 'Registration failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -37,6 +53,11 @@ export const RegistrationPage: React.FC = () => {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-stack-md">
+          {error && (
+            <div className="bg-error/10 border border-error/25 text-error p-stack-sm rounded text-sm font-medium mb-stack-sm">
+              {error}
+            </div>
+          )}
           <div className="flex flex-col md:flex-row gap-stack-md">
             <div className="w-full">
               <label className="block font-label-mono text-label-mono text-on-surface-variant mb-unit" htmlFor="firstName">
@@ -126,8 +147,8 @@ export const RegistrationPage: React.FC = () => {
           </div>
 
           <div className="pt-stack-sm">
-            <button className="w-full bg-primary-container text-on-primary-container hover:bg-primary hover:text-on-primary font-label-mono text-label-mono py-3 px-4 rounded-md transition-all duration-200 flex justify-center items-center gap-2 btn-primary uppercase tracking-wider font-semibold border border-transparent" type="submit">
-              <span>Initialize Environment</span>
+            <button disabled={loading} className="w-full bg-primary-container text-on-primary-container hover:bg-primary hover:text-on-primary font-label-mono text-label-mono py-3 px-4 rounded-md transition-all duration-200 flex justify-center items-center gap-2 btn-primary uppercase tracking-wider font-semibold border border-transparent disabled:opacity-50" type="submit">
+              <span>{loading ? 'Initializing...' : 'Initialize Environment'}</span>
               <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
             </button>
           </div>

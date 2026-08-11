@@ -1,14 +1,33 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { api } from '../../services/api';
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    navigate('/dashboard');
+    setError('');
+    setLoading(true);
+    try {
+      const res = await api.auth.login(email, password);
+      localStorage.setItem('cloudguard_token', res.access_token);
+      localStorage.setItem('cloudguard_user', JSON.stringify({
+        email: res.email,
+        full_name: res.full_name,
+        role: res.role,
+        user_id: res.user_id
+      }));
+      navigate('/dashboard');
+    } catch (err: any) {
+      setError(err.message || 'Authentication failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -78,6 +97,11 @@ export const LoginPage: React.FC = () => {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-stack-md">
+            {error && (
+              <div className="bg-error/10 border border-error/25 text-error p-stack-sm rounded text-sm font-medium mb-stack-sm">
+                {error}
+              </div>
+            )}
             <div>
               <label className="block font-label-mono text-label-mono text-on-surface-variant mb-unit uppercase" htmlFor="email">
                 Email Address
@@ -136,8 +160,12 @@ export const LoginPage: React.FC = () => {
             </div>
 
             <div className="pt-stack-sm">
-              <button className="w-full flex justify-center py-[10px] px-4 border border-transparent rounded bg-primary text-on-primary font-body-lg text-body-lg font-medium hover:bg-primary-fixed transition-colors shadow-[0_0_15px_rgba(77,142,255,0.15)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:ring-offset-background" type="submit">
-                Sign In
+              <button 
+                disabled={loading} 
+                className="w-full flex justify-center py-[10px] px-4 border border-transparent rounded bg-primary text-on-primary font-body-lg text-body-lg font-medium hover:bg-primary-fixed transition-colors shadow-[0_0_15px_rgba(77,142,255,0.15)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:ring-offset-background disabled:opacity-50" 
+                type="submit"
+              >
+                {loading ? 'Signing In...' : 'Sign In'}
               </button>
             </div>
           </form>

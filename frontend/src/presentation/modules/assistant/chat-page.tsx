@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Sidebar from '../../components/layout/sidebar';
+import { api } from '../../services/api';
 
 interface Message {
   id: string;
@@ -59,7 +60,7 @@ export const ChatPage: React.FC = () => {
     }
   }, [messages, isTyping]);
 
-  const handleSend = (e: React.FormEvent) => {
+  const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputVal.trim()) return;
 
@@ -70,19 +71,46 @@ export const ChatPage: React.FC = () => {
     };
 
     setMessages((prev) => [...prev, userMsg]);
+    const currentQuery = inputVal;
     setInputVal('');
     setIsTyping(true);
 
-    // Simulate AI response
-    setTimeout(() => {
+    try {
+      const res = await api.ai.chat(currentQuery);
       setIsTyping(false);
+      
+      let text = res.response;
+      let codeBlock: any = undefined;
+
+      // Extract markdown code block if present
+      const codeRegex = /```(\w+)?\n([\s\S]+?)\n```/;
+      const match = text.match(codeRegex);
+      if (match) {
+        const lang = match[1] || 'Code';
+        const code = match[2];
+        text = text.replace(codeRegex, '').trim();
+        codeBlock = {
+          header: `Recommended Fix (${lang})`,
+          code: code
+        };
+      }
+
       const aiResponse: Message = {
         id: `msg-${Date.now() + 1}`,
         sender: 'ai',
-        text: `Understood. I have initiated a background query and correlated the asset metrics. Your configurations are compliant with standard NIST control bounds. Let me know if you need to run another active simulation.`,
+        text: text || "Here is the response:",
+        codeBlock: codeBlock
       };
       setMessages((prev) => [...prev, aiResponse]);
-    }, 1500);
+    } catch (err: any) {
+      setIsTyping(false);
+      const errorMsg: Message = {
+        id: `msg-${Date.now() + 1}`,
+        sender: 'ai',
+        text: `Error: ${err.message || 'Failed to communicate with AI Copilot.'}`
+      };
+      setMessages((prev) => [...prev, errorMsg]);
+    }
   };
 
   return (

@@ -1,7 +1,44 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/layout/sidebar';
+import { api, type IncidentOut, type AlertOut } from '../../services/api';
 
 export const IncidentPage: React.FC = () => {
+  const [incidents, setIncidents] = useState<IncidentOut[]>([]);
+  const [alerts, setAlerts] = useState<AlertOut[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const [incRes, alertRes] = await Promise.all([
+        api.incidents.list(),
+        api.alerts.list()
+      ]);
+      setIncidents(incRes);
+      setAlerts(alertRes);
+    } catch (err) {
+      console.error('Failed to load security incident data', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const handleIncidentStatusChange = async (incidentId: number, status: string) => {
+    try {
+      await api.incidents.updateStatus(incidentId, status);
+      loadData();
+    } catch (err: any) {
+      alert(err.message || 'Failed to update incident status');
+    }
+  };
+
+  const openIncidentsCount = incidents.filter(i => ['NEW', 'INVESTIGATING'].includes(i.status.toUpperCase())).length;
+  const criticalThreatsCount = incidents.filter(i => ['CRITICAL', 'HIGH'].includes(i.severity.toUpperCase())).length;
+
   return (
     <div className="bg-background text-on-background min-h-screen flex antialiased">
       {/* Sidebar Navigation */}
@@ -81,9 +118,11 @@ export const IncidentPage: React.FC = () => {
                 <span className="material-symbols-outlined text-primary text-[20px]">warning</span>
               </div>
               <div className="flex items-baseline gap-stack-sm relative z-10">
-                <span className="font-headline-lg text-2xl font-bold text-on-surface">42</span>
+                <span className="font-headline-lg text-2xl font-bold text-on-surface">
+                  {loading ? '...' : openIncidentsCount}
+                </span>
                 <span className="font-body-md text-sm text-error flex items-center">
-                  <span className="material-symbols-outlined text-[16px]">arrow_upward</span> 12%
+                  <span className="material-symbols-outlined text-[16px]">arrow_upward</span> active
                 </span>
               </div>
             </div>
@@ -98,7 +137,9 @@ export const IncidentPage: React.FC = () => {
                 </span>
               </div>
               <div className="flex items-baseline gap-stack-sm relative z-10">
-                <span className="font-headline-lg text-2xl font-bold text-error">3</span>
+                <span className="font-headline-lg text-2xl font-bold text-error">
+                  {loading ? '...' : criticalThreatsCount}
+                </span>
                 <span className="font-body-md text-xs text-on-surface-variant ml-2">requires immediate action</span>
               </div>
             </div>
@@ -165,26 +206,28 @@ export const IncidentPage: React.FC = () => {
                   </h3>
                   <button className="text-primary font-code-sm text-xs hover:underline">View All</button>
                 </div>
-                <div className="p-stack-sm flex flex-col gap-2 overflow-y-auto flex-1 p-2">
-                  
-                  <div className="p-stack-sm rounded bg-neutral-900/40 border border-outline-variant hover:border-outline transition-colors group cursor-pointer relative overflow-hidden p-2 pl-4">
-                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-error"></div>
-                    <p className="font-body-md text-sm text-on-surface font-medium group-hover:text-primary transition-colors">Suspicious login from blocklisted IP</p>
-                    <div className="flex justify-between items-center mt-1 text-xs text-on-surface-variant">
-                      <span>User: admin_sa</span>
-                      <span>2m ago</span>
-                    </div>
-                  </div>
-
-                  <div className="p-stack-sm rounded bg-neutral-900/40 border border-outline-variant hover:border-outline transition-colors group cursor-pointer relative overflow-hidden p-2 pl-4">
-                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-orange-500"></div>
-                    <p className="font-body-md text-sm text-on-surface font-medium group-hover:text-primary transition-colors">Anomalous API request rate</p>
-                    <div className="flex justify-between items-center mt-1 text-xs text-on-surface-variant">
-                      <span>Service: PaymentGateway</span>
-                      <span>14m ago</span>
-                    </div>
-                  </div>
-
+                <div className="p-stack-sm flex flex-col gap-2 overflow-y-auto flex-1 p-2 max-h-[400px]">
+                  {loading ? (
+                    <div className="text-center py-8 text-on-surface-variant text-xs font-label-mono">Loading alerts...</div>
+                  ) : alerts.length === 0 ? (
+                    <div className="text-center py-8 text-on-surface-variant text-xs font-label-mono opacity-50">No alerts</div>
+                  ) : (
+                    alerts.map((alert) => {
+                      const colorClass = alert.severity === 'CRITICAL' || alert.severity === 'HIGH' ? 'bg-error' : 'bg-orange-500';
+                      return (
+                        <div key={alert.id} className="p-stack-sm rounded bg-neutral-900/40 border border-outline-variant hover:border-outline transition-colors group cursor-pointer relative overflow-hidden p-2 pl-4">
+                          <div className={`absolute left-0 top-0 bottom-0 w-1 ${colorClass}`}></div>
+                          <p className="font-body-md text-sm text-on-surface font-medium group-hover:text-primary transition-colors">
+                            {alert.title}
+                          </p>
+                          <div className="flex justify-between items-center mt-1 text-xs text-on-surface-variant">
+                            <span>Code: {alert.alert_code || alert.alert_type}</span>
+                            <span>{new Date(alert.created_at).toLocaleTimeString()}</span>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
                 </div>
               </div>
             </div>
@@ -204,79 +247,74 @@ export const IncidentPage: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#38342c]/50 text-sm">
-                    
-                    {/* Row 1: Critical */}
-                    <tr className="hover:bg-neutral-900/50 transition-colors group bg-error/5">
-                      <td className="py-3 px-stack-md">
-                        <div className="inline-flex items-center justify-center px-2 py-0.5 rounded border border-error bg-error/10 text-error font-code-sm text-[10px] uppercase font-bold w-full">Critical</div>
-                      </td>
-                      <td className="py-3 px-stack-md font-code-sm text-xs text-on-surface-variant">10:42:01 UTC</td>
-                      <td className="py-3 px-stack-md">
-                        <p className="font-body-md text-on-surface font-medium">Unusual Data Egress</p>
-                        <p className="font-code-sm text-[11px] text-on-surface-variant mt-0.5">Rule: Data_Exfil_Heuristic_v2</p>
-                      </td>
-                      <td className="py-3 px-stack-md">
-                        <p className="font-body-md text-on-surface">Customer Database (us-east-1)</p>
-                        <span className="inline-block mt-0.5 px-1.5 py-[1px] rounded bg-neutral-900 border border-outline-variant font-code-sm text-[10px] text-on-surface-variant">AWS</span>
-                      </td>
-                      <td className="py-3 px-stack-md">
-                        <div className="relative">
-                          <select className="w-full bg-neutral-900 border border-outline-variant rounded py-1 px-2 font-code-sm text-xs text-error focus:border-error outline-none appearance-none cursor-pointer">
-                            <option>Open</option>
-                            <option>Investigating</option>
-                            <option>Resolved</option>
-                          </select>
-                        </div>
-                      </td>
-                      <td className="py-3 px-stack-md text-center">
-                        <button className="w-8 h-8 rounded hover:bg-neutral-800 text-on-surface-variant hover:text-primary transition-colors inline-flex items-center justify-center">
-                          <span className="material-symbols-outlined text-[18px]">open_in_new</span>
-                        </button>
-                      </td>
-                    </tr>
-
-                    {/* Row 2: High */}
-                    <tr className="hover:bg-neutral-900/50 transition-colors group">
-                      <td className="py-3 px-stack-md">
-                        <div className="inline-flex items-center justify-center px-2 py-0.5 rounded border border-orange-500 bg-orange-500/10 text-orange-400 font-code-sm text-[10px] uppercase font-bold w-full">High</div>
-                      </td>
-                      <td className="py-3 px-stack-md font-code-sm text-xs text-on-surface-variant">10:15:33 UTC</td>
-                      <td className="py-3 px-stack-md">
-                        <p className="font-body-md text-on-surface font-medium">Brute Force Attempt</p>
-                        <p className="font-code-sm text-[11px] text-on-surface-variant mt-0.5">Source IP: 192.168.1.104</p>
-                      </td>
-                      <td className="py-3 px-stack-md">
-                        <p className="font-body-md text-on-surface">Payment API v2</p>
-                        <span className="inline-block mt-0.5 px-1.5 py-[1px] rounded bg-neutral-900 border border-outline-variant font-code-sm text-[10px] text-on-surface-variant">K8s Cluster</span>
-                      </td>
-                      <td className="py-3 px-stack-md">
-                        <div className="relative">
-                          <select className="w-full bg-neutral-900 border border-outline-variant rounded py-1 px-2 font-code-sm text-xs text-orange-400 focus:border-primary outline-none appearance-none cursor-pointer">
-                            <option>Open</option>
-                            <option>Investigating</option>
-                            <option>Resolved</option>
-                          </select>
-                        </div>
-                      </td>
-                      <td className="py-3 px-stack-md text-center">
-                        <button className="w-8 h-8 rounded hover:bg-neutral-800 text-on-surface-variant hover:text-primary transition-colors inline-flex items-center justify-center">
-                          <span className="material-symbols-outlined text-[18px]">open_in_new</span>
-                        </button>
-                      </td>
-                    </tr>
-
+                    {loading ? (
+                      <tr>
+                        <td colSpan={6} className="py-8 text-center text-on-surface-variant font-label-mono text-xs">
+                          Loading incidents...
+                        </td>
+                      </tr>
+                    ) : incidents.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="py-8 text-center text-on-surface-variant font-label-mono text-xs">
+                          No security incidents open.
+                        </td>
+                      </tr>
+                    ) : (
+                      incidents.map((inc) => {
+                        const isCritical = inc.severity === 'CRITICAL';
+                        const colorClass = isCritical ? 'text-error border-error bg-error/10' : 'text-orange-400 border-orange-500 bg-orange-500/10';
+                        return (
+                          <tr key={inc.id} className={`hover:bg-neutral-900/50 transition-colors group ${isCritical ? 'bg-error/5' : ''}`}>
+                            <td className="py-3 px-stack-md">
+                              <div className={`inline-flex items-center justify-center px-2 py-0.5 rounded border font-code-sm text-[10px] uppercase font-bold w-full ${colorClass}`}>
+                                {inc.severity}
+                              </div>
+                            </td>
+                            <td className="py-3 px-stack-md font-code-sm text-xs text-on-surface-variant">
+                              {new Date(inc.created_at).toLocaleTimeString()} UTC
+                            </td>
+                            <td className="py-3 px-stack-md">
+                              <p className="font-body-md text-on-surface font-medium">{inc.title}</p>
+                              <p className="font-code-sm text-[11px] text-on-surface-variant mt-0.5">Code: {inc.incident_code}</p>
+                            </td>
+                            <td className="py-3 px-stack-md">
+                              <p className="font-body-md text-on-surface">Asset ID: {inc.alert_id || 'Global'}</p>
+                            </td>
+                            <td className="py-3 px-stack-md">
+                              <div className="relative">
+                                <select 
+                                  value={inc.status} 
+                                  onChange={(e) => handleIncidentStatusChange(inc.id, e.target.value)}
+                                  className="w-full bg-neutral-900 border border-outline-variant rounded py-1 px-2 font-code-sm text-xs text-on-surface-variant focus:border-primary outline-none cursor-pointer"
+                                >
+                                  <option value="NEW">NEW</option>
+                                  <option value="INVESTIGATING">INVESTIGATING</option>
+                                  <option value="RESOLVED">RESOLVED</option>
+                                  <option value="CLOSED">CLOSED</option>
+                                </select>
+                              </div>
+                            </td>
+                            <td className="py-3 px-stack-md text-center">
+                              <button className="w-8 h-8 rounded hover:bg-neutral-800 text-on-surface-variant hover:text-primary transition-colors inline-flex items-center justify-center">
+                                <span className="material-symbols-outlined text-[18px]">open_in_new</span>
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
                   </tbody>
                 </table>
               </div>
 
               {/* Pagination */}
               <div className="border-t border-outline-variant bg-[#0c0c0c] p-2 flex justify-between items-center">
-                <span className="font-code-sm text-xs text-on-surface-variant px-unit">Showing 1-2 of 42 incidents</span>
+                <span className="font-code-sm text-xs text-on-surface-variant px-unit">Showing {incidents.length} of {incidents.length} incidents</span>
                 <div className="flex gap-1">
                   <button className="w-8 h-8 rounded border border-outline-variant bg-neutral-900 text-on-surface-variant hover:bg-neutral-800 transition-colors flex items-center justify-center disabled:opacity-50" disabled>
                     <span className="material-symbols-outlined text-[18px]">chevron_left</span>
                   </button>
-                  <button className="w-8 h-8 rounded border border-outline-variant bg-neutral-900 text-on-surface hover:bg-neutral-800 transition-colors flex items-center justify-center">
+                  <button className="w-8 h-8 rounded border border-outline-variant bg-neutral-900 text-on-surface hover:bg-neutral-800 transition-colors flex items-center justify-center disabled:opacity-50" disabled>
                     <span className="material-symbols-outlined text-[18px]">chevron_right</span>
                   </button>
                 </div>
