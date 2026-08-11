@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>CloudGuard - Prototype Portal Hub</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#408A71",
+            "primary-hover": "#4fa386",
+            "primary-dim": "#2c614f",
+            "background": "#000000",
+            "surface": "#0a0a0a",
+            "surface-card": "#121212",
+            "surface-dim": "#16130c",
+            "border-gray": "#262626",
+            "border-active": "#408A71",
+            "text-primary": "#FFF7EB",
+            "text-secondary": "#A3A3A3",
+            "accent-green": "#8bd5b9"
+          },
+          fontFamily: {
+            sans: ["Geist", "Inter", "system-ui", "sans-serif"],
+            mono: ["JetBrains Mono", "monospace"]
+          },
+          borderRadius: {
+            "DEFAULT": "0.5rem",
+            "lg": "1.0rem",
+            "xl": "1.5rem",
+            "full": "9999px"
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #000000;
+      color: #FFF7EB;
+      font-family: 'Geist', 'Inter', sans-serif;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #000000;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #262626;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #408A71;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-primary selection:text-black">
+
+  <!-- Header Navigation -->
+  <header class="border-b border-border-gray bg-surface/80 backdrop-blur-md sticky top-0 z-40 px-6 py-4">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      
+      <!-- Logo & Subtitle -->
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded bg-primary flex items-center justify-center text-black font-mono font-bold text-xl tracking-tighter">
+          CG
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <h1 class="text-xl font-bold tracking-tight font-mono text-text-primary">CLOUD<span class="text-primary">GUARD</span></h1>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-mono font-medium bg-primary/10 text-primary border border-primary/20">
+              <span class="w-1.5 h-1.5 mr-1.5 rounded-full bg-primary animate-pulse"></span>
+              PROTOTYPE HUB
+            </span>
+          </div>
+          <p class="text-xs text-text-secondary font-mono mt-0.5">Obsidian Kinetic Theme System // Active Workspace</p>
+        </div>
+      </div>
+
+      <!-- Controls & Search -->
+      <div class="flex flex-wrap items-center gap-3">
+        <div class="relative min-w-[240px]">
+          <span class="material-symbols-outlined absolute left-3 top-2.5 text-text-secondary text-lg">search</span>
+          <input 
+            type="text" 
+            id="searchInput" 
+            placeholder="Search modules..." 
+            class="w-full bg-surface border border-border-gray rounded px-3 py-2 pl-9 text-sm text-text-primary placeholder:text-text-secondary/60 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition"
+            oninput="filterModules()"
+          />
+        </div>
+        
+        <div class="flex bg-surface border border-border-gray rounded p-0.5" id="categoryFilters">
+          <button onclick="filterCategory('all', this)" class="px-3 py-1.5 text-xs font-mono rounded bg-primary text-black transition font-semibold">ALL</button>
+          <button onclick="filterCategory('Identity', this)" class="px-3 py-1.5 text-xs font-mono rounded text-text-secondary hover:text-text-primary transition">IDENTITY</button>
+          <button onclick="filterCategory('Analytics', this)" class="px-3 py-1.5 text-xs font-mono rounded text-text-secondary hover:text-text-primary transition">ANALYTICS</button>
+          <button onclick="filterCategory('Operations', this)" class="px-3 py-1.5 text-xs font-mono rounded text-text-secondary hover:text-text-primary transition">OPERATIONS</button>
+        </div>
+      </div>
+      
+    </div>
+  </header>
+
+  <!-- Main Content Layout -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-6 flex flex-col lg:flex-row gap-6">
+    
+    <!-- Left Panel: Grid of Prototypes -->
+    <div class="w-full lg:w-3/5 flex flex-col gap-6">
+      
+      <!-- Quick Status Cards -->
+      <div class="grid grid-cols-3 gap-4">
+        <div class="bg-surface border border-border-gray p-4 rounded flex flex-col justify-between">
+          <span class="text-[10px] font-mono text-text-secondary tracking-widest uppercase">Loaded Modules</span>
+          <span class="text-3xl font-mono font-bold text-primary mt-1">7</span>
+        </div>
+        <div class="bg-surface border border-border-gray p-4 rounded flex flex-col justify-between">
+          <span class="text-[10px] font-mono text-text-secondary tracking-widest uppercase">System Design</span>
+          <span class="text-xs font-mono text-text-primary mt-2">OBSIDIAN KINETIC</span>
+        </div>
+        <div class="bg-surface border border-border-gray p-4 rounded flex flex-col justify-between">
+          <span class="text-[10px] font-mono text-text-secondary tracking-widest uppercase">Local Environment</span>
+          <span class="text-xs font-mono text-accent-green mt-2 flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-accent-green inline-block animate-ping"></span>
+            STABLE
+          </span>
+        </div>
+      </div>
+
+      <div class="border-t border-border-gray pt-2">
+        <h2 class="text-xs font-mono text-text-secondary uppercase tracking-widest mb-4">Interactive Modules</h2>
+        
+        <!-- Modules Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="modulesGrid">
+          
+          <!-- Module 1: Login -->
+          <div class="module-card bg-surface border border-border-gray hover:border-primary/60 transition-all duration-300 rounded p-4 flex flex-col justify-between group" data-name="CloudGuard Sign In Login Gateway" data-category="Identity">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-mono bg-border-gray text-text-secondary px-2 py-0.5 rounded">IDENTITY</span>
+                <span class="material-symbols-outlined text-text-secondary group-hover:text-primary transition-colors text-sm">lock</span>
+              </div>
+              <h3 class="text-base font-bold text-text-primary font-mono group-hover:text-primary transition-colors">Sign In Portal</h3>
+              <p class="text-xs text-text-secondary/80 mt-1 line-clamp-2">Secure entry screen containing credentials validation, corporate notice warnings, and MFA setup options.</p>
+              
+              <!-- Thumbnail -->
+              <div class="mt-3 relative aspect-video bg-black/60 rounded overflow-hidden border border-border-gray group-hover:border-primary/40 transition">
+                <img src="cloudguard_login/screen.png" alt="Login Preview" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-80 group-hover:opacity-100" />
+              </div>
+            </div>
+            
+            <div class="mt-4 flex items-center justify-between gap-2">
+              <button onclick="previewModule('cloudguard_login/code.html', 'Sign In Portal')" class="flex-1 bg-border-gray hover:bg-neutral-800 text-text-primary text-xs font-mono py-2 rounded transition flex items-center justify-center gap-1">
+                <span class="material-symbols-outlined text-sm">preview</span> Preview
+              </button>
+              <a href="cloudguard_login/code.html" target="_blank" class="flex-1 bg-primary hover:bg-primary-hover text-black text-xs font-semibold font-mono py-2 rounded transition flex items-center justify-center gap-1">
+                <span class="material-symbols-outlined text-sm">open_in_new</span> Launch <span class="material-symbols-outlined text-[10px]">arrow_outward</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Module 2: Registration -->
+          <div class="module-card bg-surface border border-border-gray hover:border-primary/60 transition-all duration-300 rounded p-4 flex flex-col justify-between group" data-name="CloudGuard Registration Account Setup" data-category="Identity">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-mono bg-border-gray text-text-secondary px-2 py-0.5 rounded">IDENTITY</span>
+                <span class="material-symbols-outlined text-text-secondary group-hover:text-primary transition-colors text-sm">person_add</span>
+              </div>
+              <h3 class="text-base font-bold text-text-primary font-mono group-hover:text-primary transition-colors">Registration Gateway</h3>
+              <p class="text-xs text-text-secondary/80 mt-1 line-clamp-2">New user onboarding flow including workspace creation, compliance setup, and security questions setup.</p>
+              
+              <!-- Thumbnail -->
+              <div class="mt-3 relative aspect-video bg-black/60 rounded overflow-hidden border border-border-gray group-hover:border-primary/40 transition">
+                <img src="cloudguard_registration/screen.png" alt="Registration Preview" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-80 group-hover:opacity-100" />
+              </div>
+            </div>
+            
+            <div class="mt-4 flex items-center justify-between gap-2">
+              <button onclick="previewModule('cloudguard_registration/code.html', 'Registration Gateway')" class="flex-1 bg-border-gray hover:bg-neutral-800 text-text-primary text-xs font-mono py-2 rounded transition flex items-center justify-center gap-1">
+                <span class="material-symbols-outlined text-sm">preview</span> Preview
+              </button>
+              <a href="cloudguard_registration/code.html" target="_blank" class="flex-1 bg-primary hover:bg-primary-hover text-black text-xs font-semibold font-mono py-2 rounded transition flex items-center justify-center gap-1">
+                <span class="material-symbols-outlined text-sm">open_in_new</span> Launch <span class="material-symbols-outlined text-[10px]">arrow_outward</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Module 3: Executive Dashboard -->
+          <div class="module-card bg-surface border border-border-gray hover:border-primary/60 transition-all duration-300 rounded p-4 flex flex-col justify-between group" data-name="CloudGuard Executive Overview Dashboard Analytics Metrics CISO" data-category="Analytics">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-mono bg-border-gray text-text-secondary px-2 py-0.5 rounded">ANALYTICS</span>
+                <span class="material-symbols-outlined text-text-secondary group-hover:text-primary transition-colors text-sm">insights</span>
+              </div>
+              <h3 class="text-base font-bold text-text-primary font-mono group-hover:text-primary transition-colors">Executive Overview</h3>
+              <p class="text-xs text-text-secondary/80 mt-1 line-clamp-2">High-level threat dashboard for CISOs. Aggregates vulnerabilities, system health indicators, and operational metrics.</p>
+              
+              <!-- Thumbnail -->
+              <div class="mt-3 relative aspect-video bg-black/60 rounded overflow-hidden border border-border-gray group-hover:border-primary/40 transition">
+                <img src="executive_overview_dashboard/screen.png" alt="Executive Overview Preview" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-80 group-hover:opacity-100" />
+              </div>
+            </div>
+            
+            <div class="mt-4 flex items-center justify-between gap-2">
+              <button onclick="previewModule('executive_overview_dashboard/code.html', 'Executive Overview')" class="flex-1 bg-border-gray hover:bg-neutral-800 text-text-primary text-xs font-mono py-2 rounded transition flex items-center justify-center gap-1">
+                <span class="material-symbols-outlined text-sm">preview</span> Preview
+              </button>
+              <a href="executive_overview_dashboard/code.html" target="_blank" class="flex-1 bg-primary hover:bg-primary-hover text-black text-xs font-semibold font-mono py-2 rounded transition flex items-center justify-center gap-1">
+                <span class="material-symbols-outlined text-sm">open_in_new</span> Launch <span class="material-symbols-outlined text-[10px]">arrow_outward</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Module 4: Incident Management Center -->
+          <div class="module-card bg-surface border border-border-gray hover:border-primary/60 transition-all duration-300 rounded p-4 flex flex-col justify-between group" data-name="CloudGuard Incident Management Center Security SOC Response Alerts" data-category="Operations">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-mono bg-border-gray text-text-secondary px-2 py-0.5 rounded">OPERATIONS</span>
+                <span class="material-symbols-outlined text-text-secondary group-hover:text-primary transition-colors text-sm">emergency_home</span>
+              </div>
+              <h3 class="text-base font-bold text-text-primary font-mono group-hover:text-primary transition-colors">Incident Management</h3>
+              <p class="text-xs text-text-secondary/80 mt-1 line-clamp-2">Real-time alert queues, diagnostic details, and response playbooks for Security Operation Center (SOC) engineers.</p>
+              
+              <!-- Thumbnail -->
+              <div class="mt-3 relative aspect-video bg-black/60 rounded overflow-hidden border border-border-gray group-hover:border-primary/40 transition">
+                <img src="incident_management_center/screen.png" alt="Incident Management Preview" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-80 group-hover:opacity-100" />
+              </div>
+            </div>
+            
+            <div class="mt-4 flex items-center justify-between gap-2">
+              <button onclick="previewModule('incident_management_center/code.html', 'Incident Management')" class="flex-1 bg-border-gray hover:bg-neutral-800 text-text-primary text-xs font-mono py-2 rounded transition flex items-center justify-center gap-1">
+                <span class="material-symbols-outlined text-sm">preview</span> Preview
+              </button>
+              <a href="incident_management_center/code.html" target="_blank" class="flex-1 bg-primary hover:bg-primary-hover text-black text-xs font-semibold font-mono py-2 rounded transition flex items-center justify-center gap-1">
+                <span class="material-symbols-outlined text-sm">open_in_new</span> Launch <span class="material-symbols-outlined text-[10px]">arrow_outward</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Module 5: Application Inventory -->
+          <div class="module-card bg-surface border border-border-gray hover:border-primary/60 transition-all duration-300 rounded p-4 flex flex-col justify-between group" data-name="CloudGuard Application Inventory Asset Catalog Services Packages" data-category="Operations">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-mono bg-border-gray text-text-secondary px-2 py-0.5 rounded">OPERATIONS</span>
+                <span class="material-symbols-outlined text-text-secondary group-hover:text-primary transition-colors text-sm">inventory_2</span>
+              </div>
+              <h3 class="text-base font-bold text-text-primary font-mono group-hover:text-primary transition-colors">Application Inventory</h3>
+              <p class="text-xs text-text-secondary/80 mt-1 line-clamp-2">Complete catalogue of internal services, deployed artifacts, owner attributions, and vulnerability tracking.</p>
+              
+              <!-- Thumbnail -->
+              <div class="mt-3 relative aspect-video bg-black/60 rounded overflow-hidden border border-border-gray group-hover:border-primary/40 transition">
+                <img src="application_inventory/screen.png" alt="Application Inventory Preview" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-80 group-hover:opacity-100" />
+              </div>
+            </div>
+            
+            <div class="mt-4 flex items-center justify-between gap-2">
+              <button onclick="previewModule('application_inventory/code.html', 'Application Inventory')" class="flex-1 bg-border-gray hover:bg-neutral-800 text-text-primary text-xs font-mono py-2 rounded transition flex items-center justify-center gap-1">
+                <span class="material-symbols-outlined text-sm">preview</span> Preview
+              </button>
+              <a href="application_inventory/code.html" target="_blank" class="flex-1 bg-primary hover:bg-primary-hover text-black text-xs font-semibold font-mono py-2 rounded transition flex items-center justify-center gap-1">
+                <span class="material-symbols-outlined text-sm">open_in_new</span> Launch <span class="material-symbols-outlined text-[10px]">arrow_outward</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Module 6: Migration Pipeline -->
+          <div class="module-card bg-surface border border-border-gray hover:border-primary/60 transition-all duration-300 rounded p-4 flex flex-col justify-between group" data-name="CloudGuard Migration Pipeline Tracker DevOps CI/CD" data-category="Analytics">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-mono bg-border-gray text-text-secondary px-2 py-0.5 rounded">ANALYTICS</span>
+                <span class="material-symbols-outlined text-text-secondary group-hover:text-primary transition-colors text-sm">route</span>
+              </div>
+              <h3 class="text-base font-bold text-text-primary font-mono group-hover:text-primary transition-colors">Migration Pipeline</h3>
+              <p class="text-xs text-text-secondary/80 mt-1 line-clamp-2">Visualizes cloud migration progress, repository statuses, compliance checklists, and cloud provider deployments.</p>
+              
+              <!-- Thumbnail -->
+              <div class="mt-3 relative aspect-video bg-black/60 rounded overflow-hidden border border-border-gray group-hover:border-primary/40 transition">
+                <img src="migration_pipeline_tracker/screen.png" alt="Migration Pipeline Preview" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-80 group-hover:opacity-100" />
+              </div>
+            </div>
+            
+            <div class="mt-4 flex items-center justify-between gap-2">
+              <button onclick="previewModule('migration_pipeline_tracker/code.html', 'Migration Pipeline')" class="flex-1 bg-border-gray hover:bg-neutral-800 text-text-primary text-xs font-mono py-2 rounded transition flex items-center justify-center gap-1">
+                <span class="material-symbols-outlined text-sm">preview</span> Preview
+              </button>
+              <a href="migration_pipeline_tracker/code.html" target="_blank" class="flex-1 bg-primary hover:bg-primary-hover text-black text-xs font-semibold font-mono py-2 rounded transition flex items-center justify-center gap-1">
+                <span class="material-symbols-outlined text-sm">open_in_new</span> Launch <span class="material-symbols-outlined text-[10px]">arrow_outward</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Module 7: AI Assistant Hub -->
+          <div class="module-card bg-surface border border-border-gray hover:border-primary/60 transition-all duration-300 rounded p-4 flex flex-col justify-between group" data-name="CloudGuard AI Assistant Hub Chatbot SecOps LLM" data-category="Analytics">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-mono bg-border-gray text-text-secondary px-2 py-0.5 rounded">ANALYTICS</span>
+                <span class="material-symbols-outlined text-text-secondary group-hover:text-primary transition-colors text-sm">smart_toy</span>
+              </div>
+              <h3 class="text-base font-bold text-text-primary font-mono group-hover:text-primary transition-colors">AI Assistant Hub</h3>
+              <p class="text-xs text-text-secondary/80 mt-1 line-clamp-2">SecOps conversational agent interface. Query vulnerability data, policy compliance, and trigger remediation tasks.</p>
+              
+              <!-- Thumbnail -->
+              <div class="mt-3 relative aspect-video bg-black/60 rounded overflow-hidden border border-border-gray group-hover:border-primary/40 transition">
+                <img src="cloudguard_ai_assistant_hub/screen.png" alt="AI Assistant Hub Preview" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-80 group-hover:opacity-100" />
+              </div>
+            </div>
+            
+            <div class="mt-4 flex items-center justify-between gap-2">
+              <button onclick="previewModule('cloudguard_ai_assistant_hub/code.html', 'AI Assistant Hub')" class="flex-1 bg-border-gray hover:bg-neutral-800 text-text-primary text-xs font-mono py-2 rounded transition flex items-center justify-center gap-1">
+                <span class="material-symbols-outlined text-sm">preview</span> Preview
+              </button>
+              <a href="cloudguard_ai_assistant_hub/code.html" target="_blank" class="flex-1 bg-primary hover:bg-primary-hover text-black text-xs font-semibold font-mono py-2 rounded transition flex items-center justify-center gap-1">
+                <span class="material-symbols-outlined text-sm">open_in_new</span> Launch <span class="material-symbols-outlined text-[10px]">arrow_outward</span>
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      
+    </div>
+
+    <!-- Right Panel: Sandbox Interactive Live View -->
+    <div class="w-full lg:w-2/5 flex flex-col">
+      <div class="bg-surface border border-border-gray rounded-lg flex-1 flex flex-col overflow-hidden min-h-[500px] lg:min-h-0 sticky top-24">
+        
+        <!-- Live Sandbox Header -->
+        <div class="bg-black px-4 py-3 border-b border-border-gray flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-neutral-700" id="sandboxStatusLed"></span>
+            <span class="text-xs font-mono text-text-primary" id="sandboxTitle">Interactive Sandbox</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <button onclick="reloadSandbox()" class="text-text-secondary hover:text-text-primary p-1 rounded hover:bg-border-gray transition flex items-center justify-center" title="Reload Frame">
+              <span class="material-symbols-outlined text-base">refresh</span>
+            </button>
+            <a href="#" id="sandboxExternalLink" target="_blank" class="text-text-secondary hover:text-text-primary p-1 rounded hover:bg-border-gray transition flex items-center justify-center hidden" title="Open Fullscreen">
+              <span class="material-symbols-outlined text-base">open_in_new</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Sandbox Body / Frame Container -->
+        <div class="flex-1 bg-black relative flex flex-col items-center justify-center p-6 text-center" id="sandboxContainer">
+          
+          <!-- Empty State -->
+          <div id="sandboxEmptyState" class="space-y-4 max-w-sm">
+            <div class="w-16 h-16 rounded-full bg-primary/5 flex items-center justify-center mx-auto text-primary border border-primary/10">
+              <span class="material-symbols-outlined text-3xl">developer_mode_tv</span>
+            </div>
+            <h3 class="text-sm font-bold font-mono text-text-primary tracking-wide">NO ACTIVE PREVIEW</h3>
+            <p class="text-xs text-text-secondary leading-relaxed">
+              Select one of the prototype modules on the left and click <strong class="text-primary font-medium">"Preview"</strong> to render the live UI mockup directly in this sandboxed layout.
+            </p>
+            <div class="text-[10px] font-mono text-text-secondary/55 p-2 bg-neutral-900/40 rounded border border-border-gray/50">
+              Uses sandbox secure attributes to isolate cookies and operations.
+            </div>
+          </div>
+
+          <!-- Active Iframe (hidden by default) -->
+          <iframe 
+            id="sandboxIframe" 
+            src="" 
+            class="w-full h-full border-0 hidden"
+            sandbox="allow-scripts allow-forms allow-same-origin"
+          ></iframe>
+          
+        </div>
+      </div>
+    </div>
+    
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-border-gray py-6 px-6 bg-surface mt-12 text-center text-xs text-text-secondary font-mono">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div>
+        © 2026 CloudGuard Security Corp. Designed under the <a href="obsidian_kinetic/DESIGN.md" target="_blank" class="text-primary hover:underline">Obsidian Kinetic System</a>.
+      </div>
+      <div class="flex items-center gap-4">
+        <span>Session: <span class="text-accent-green">Online</span></span>
+        <span class="text-border-gray">|</span>
+        <span>Environment: <span class="text-text-primary">Dev Sandbox</span></span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    // Preview a module inside the sandbox container
+    function previewModule(url, title) {
+      const iframe = document.getElementById('sandboxIframe');
+      const emptyState = document.getElementById('sandboxEmptyState');
+      const sandboxTitle = document.getElementById('sandboxTitle');
+      const extLink = document.getElementById('sandboxExternalLink');
+      const statusLed = document.getElementById('sandboxStatusLed');
+      const container = document.getElementById('sandboxContainer');
+
+      // Update Header Info
+      sandboxTitle.textContent = `PREVIEWING: ${title}`;
+      extLink.href = url;
+      extLink.classList.remove('hidden');
+      statusLed.className = "w-2.5 h-2.5 rounded-full bg-accent-green animate-pulse";
+      container.classList.remove('p-6'); // remove padding for full-bleed iframe
+
+      // Load Iframe
+      emptyState.classList.add('hidden');
+      iframe.classList.remove('hidden');
+      iframe.src = url;
+    }
+
+    // Reload the currently loaded sandbox page
+    function reloadSandbox() {
+      const iframe = document.getElementById('sandboxIframe');
+      if (iframe && !iframe.classList.contains('hidden')) {
+        const currentSrc = iframe.src;
+        iframe.src = '';
+        iframe.src = currentSrc;
+      }
+    }
+
+    // Filter modules based on search input
+    function filterModules() {
+      const searchVal = document.getElementById('searchInput').value.toLowerCase();
+      const cards = document.querySelectorAll('.module-card');
+      
+      cards.forEach(card => {
+        const text = card.getAttribute('data-name').toLowerCase();
+        if (text.includes(searchVal)) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+    }
+
+    // Filter by Category Button click
+    function filterCategory(cat, btn) {
+      // Toggle button active states
+      const filterButtons = document.querySelectorAll('#categoryFilters button');
+      filterButtons.forEach(b => {
+        b.className = "px-3 py-1.5 text-xs font-mono rounded text-text-secondary hover:text-text-primary transition";
+      });
+      
+      btn.className = "px-3 py-1.5 text-xs font-mono rounded bg-primary text-black transition font-semibold";
+
+      // Toggle card visibility
+      const cards = document.querySelectorAll('.module-card');
+      cards.forEach(card => {
+        const cardCat = card.getAttribute('data-category');
+        if (cat === 'all' || cardCat === cat) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+      
+      // Reset search field
+      document.getElementById('searchInput').value = "";
+    }
+  </script>
+
+</body>
+</html>
